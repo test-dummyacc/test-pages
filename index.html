@@ -908,6 +908,7 @@
 
 	function touchMove(e) {
 		if (!isDragging) return;
+		e.preventDefault();
 		currentX = e.touches[0].clientX;
 		const deltaX = currentX - startX;
 		currentTranslate = prevTranslate + deltaX;
@@ -919,7 +920,7 @@
 
 		const deltaX = currentX - startX;
 
-		if (deltaX > 30 && currentIndex > 1) {
+		if (deltaX > 30 && currentIndex > 2) {
 			currentIndex--;
 		} else if (deltaX < -30 && currentIndex < items.length - 1) {
 			currentIndex++;
@@ -938,8 +939,8 @@
 		track.style.transform = `translateX(${currentTranslate}px)`;
 	}
 
-	track.addEventListener('touchstart', touchStart, { passive: true });
-	track.addEventListener('touchmove', touchMove, { passive: true });
+	track.addEventListener('touchstart', touchStart, { passive: false });
+	track.addEventListener('touchmove', touchMove, { passive: false });
 	track.addEventListener('touchend', touchEnd);
 
 	track.addEventListener('transitionend', resetPosition);
