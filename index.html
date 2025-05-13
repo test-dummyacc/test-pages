@@ -843,6 +843,9 @@
 	const carouselWidth = document.querySelector('.carousel').clientWidth;
 	let currentIndex = 2;
 	let autoScroll;
+	let startY = 0;
+	let isHorizontal = true;
+	const swipeThreshold = 50;
 
 	function createBullets() {
 		const bulletsContainer = document.getElementById('bullets');
@@ -890,29 +893,52 @@
 	function startAutoScroll() {
 		autoScroll = setInterval(() => {
 			currentIndex++;
-			updatePosition();
-		}, 7000);
+			if (currentIndex > totalItems + 1) {
+				track.style.transition = 'none';
+				currentIndex = 2;
+				updatePosition();
+				void track.offsetWidth;
+			} else {
+				updatePosition();
+			}
+		}, 6000);
 	}
-
 	function resetAutoScroll() {
 		clearInterval(autoScroll);
 		startAutoScroll();
 	}
-
 	function touchStart(e) {
 		startX = e.touches[0].clientX;
+		startY = e.touches[0].clientY;
+		currentX = startX;
 		isDragging = true;
+		isHorizontal = true;
 		animationID = requestAnimationFrame(animation);
 		track.style.transition = 'none';
 	}
 
 	function touchMove(e) {
 		if (!isDragging) return;
-		e.preventDefault();
-		currentX = e.touches[0].clientX;
-		const deltaX = currentX - startX;
-		currentTranslate = prevTranslate + deltaX;
+
+		const currentY = e.touches[0].clientY;
+		const dy = Math.abs(currentY - startY);
+		const dx = Math.abs(e.touches[0].clientX - startX);
+
+		if (dy > dx) {
+			isHorizontal = false;
+			isDragging = false;
+			cancelAnimationFrame(animationID);
+			return;
+		}
+
+		if (isHorizontal) {
+			e.preventDefault();
+			currentX = e.touches[0].clientX;
+			const deltaX = currentX - startX;
+			currentTranslate = prevTranslate + deltaX;
+		}
 	}
+	
 
 	function touchEnd() {
 		cancelAnimationFrame(animationID);
@@ -920,9 +946,9 @@
 
 		const deltaX = currentX - startX;
 
-		if (deltaX > 30 && currentIndex > 2) {
+		if (deltaX > swipeThreshold && currentIndex > 2) {
 			currentIndex--;
-		} else if (deltaX < -30 && currentIndex <= 5) {
+		} else if (deltaX < -swipeThreshold && currentIndex <= 5) {
 			currentIndex++;
 		}
 
