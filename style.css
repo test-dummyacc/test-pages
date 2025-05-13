@@ -70,6 +70,11 @@
 	.wrapper {
 	  width: 100%;
 	}
+	.carousel {
+		touch-action: pan-y;
+		-webkit-overflow-scrolling: auto;
+		overflow: hidden;
+        }
 	.carousel-track {
       display: flex;
       transition: transform 0.5s ease;
@@ -220,4 +225,3 @@
 		.cb2ld6y{display:table-row;}
 [class~="x_cb2ld6y"]{display:flex !important;flex-wrap:wrap;gap:8px;column-gap:8px;}
 [class~="x_ci610r7"]{flex-grow:1;box-sizing:border-box;flex-basis:316px;}[class~="x_c290349"]{display:none !important;}
-       
