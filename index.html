@@ -938,8 +938,8 @@
 		track.style.transform = `translateX(${currentTranslate}px)`;
 	}
 
-	track.addEventListener('touchstart', touchStart);
-	track.addEventListener('touchmove', touchMove);
+	track.addEventListener('touchstart', touchStart, { passive: true });
+	track.addEventListener('touchmove', touchMove, { passive: true });
 	track.addEventListener('touchend', touchEnd);
 
 	track.addEventListener('transitionend', resetPosition);
