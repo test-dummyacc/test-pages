@@ -829,87 +829,128 @@
 	  <div id="floatingBg" class="floating-gradient-background desktop-hide tablet-hide"></div>
 	  <a id="floatingButton" class="floating-button desktop-hide tablet-hide">Get Oobit App</a>
       </body>
-    <script>
-        const track = document.getElementById('carouselTrack');
-        const items = track.children;
-        const totalItems = 5;
-        const itemWidth = items[2].clientWidth + 24;
-        const carouselWidth = document.querySelector('.carousel').clientWidth;
-        let currentIndex = 2;
-        let autoScroll;
+<script>
+	let startX = 2;
+	let currentX = 0;
+	let isDragging = false;
+	let currentTranslate = 0;
+	let prevTranslate = 0;
+	let animationID;
+	const track = document.getElementById('carouselTrack');
+	const items = track.children;
+	const totalItems = 5;
+	const itemWidth = items[2].clientWidth + 24;
+	const carouselWidth = document.querySelector('.carousel').clientWidth;
+	let currentIndex = 2;
+	let autoScroll;
 
-        function createBullets() {
-            const bulletsContainer = document.getElementById('bullets');
-            for (let i = 0; i < totalItems; i++) {
-                const bullet = document.createElement('div');
-                bullet.classList.add('bullet');
-                bullet.addEventListener('click', () => navigateTo(i + 1));
-                bulletsContainer.appendChild(bullet);
-            }
-        }
-
-        function navigateTo(index) {
-            currentIndex = index + 1;
-            updatePosition();
-            resetAutoScroll();
-        }
-
-       function updatePosition() {
-		const shift = (carouselWidth - itemWidth) / 2;
-		if (window.innerWidth <= 600) {
-			track.style.transition = 'transform 1.5s ease';
-			track.style.transform = `translateX(-${(currentIndex * itemWidth)}px)`;
-		} else {
-			track.style.transition = 'transform 0.5s ease';
-			track.style.transform = `translateX(-${(currentIndex * itemWidth) - shift}px)`;
+	function createBullets() {
+		const bulletsContainer = document.getElementById('bullets');
+		for (let i = 0; i < totalItems; i++) {
+			const bullet = document.createElement('div');
+			bullet.classList.add('bullet');
+			bullet.addEventListener('click', () => navigateTo(i + 1));
+			bulletsContainer.appendChild(bullet);
 		}
+	}
+
+	function navigateTo(index) {
+		currentIndex = index + 1;
+		updatePosition();
+		resetAutoScroll();
+	}
+
+	function updatePosition() {
+		const shift = (carouselWidth - itemWidth) / 2;
+		const offset = (currentIndex * itemWidth) - (window.innerWidth <= 600 ? 0 : shift);
+		currentTranslate = -offset;
+		prevTranslate = currentTranslate;
+
+		track.style.transition = window.innerWidth <= 600 ? 'transform 1.5s ease' : 'transform 0.5s ease';
+		track.style.transform = `translateX(${currentTranslate}px)`;
 
 		setActiveBullet(currentIndex - 1);
 	}
-        function resetPosition() {
-            if (currentIndex > totalItems + 1) {
-                track.style.transition = 'none';
-                currentIndex = 2;
-                updatePosition();
-            }
-        }
 
-        function setActiveBullet(index) {
-            const bullets = document.querySelectorAll('.bullet');
-            bullets.forEach((bullet, idx) => {
-                bullet.classList.toggle('active', idx === index - 1);
-            });
-        }
+	function resetPosition() {
+		if (currentIndex > totalItems + 1) {
+			track.style.transition = 'none';
+			currentIndex = 2;
+			updatePosition();
+		}
+	}
 
-        function startAutoScroll() {
-            autoScroll = setInterval(() => {
-                currentIndex++;
-                updatePosition();
-            }, 7000);
-        }
+	function setActiveBullet(index) {
+		const bullets = document.querySelectorAll('.bullet');
+		bullets.forEach((bullet, idx) => {
+			bullet.classList.toggle('active', idx === index - 1);
+		});
+	}
 
-        function resetAutoScroll() {
-            clearInterval(autoScroll);
-            startAutoScroll();
-        }
-		
-		track.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-        track.addEventListener('touchend', (e) => {
-            const delta = startX - e.changedTouches[0].clientX;
-            if (delta > 50) currentIndex++;
-            if (delta < -50) currentIndex--;
-            updatePosition();
-            resetAutoScroll();
-        });
-		
-        track.addEventListener('transitionend', resetPosition);
-        track.addEventListener('mouseover', () => clearInterval(autoScroll));
-        track.addEventListener('mouseout', startAutoScroll);
-        createBullets();
-        setActiveBullet(1);
-        updatePosition();
-        startAutoScroll();
-    </script>
+	function startAutoScroll() {
+		autoScroll = setInterval(() => {
+			currentIndex++;
+			updatePosition();
+		}, 7000);
+	}
+
+	function resetAutoScroll() {
+		clearInterval(autoScroll);
+		startAutoScroll();
+	}
+
+	function touchStart(e) {
+		startX = e.touches[0].clientX;
+		isDragging = true;
+		animationID = requestAnimationFrame(animation);
+		track.style.transition = 'none';
+	}
+
+	function touchMove(e) {
+		if (!isDragging) return;
+		currentX = e.touches[0].clientX;
+		const deltaX = currentX - startX;
+		currentTranslate = prevTranslate + deltaX;
+	}
+
+	function touchEnd() {
+		cancelAnimationFrame(animationID);
+		isDragging = false;
+
+		const deltaX = currentX - startX;
+
+		if (deltaX > 30 && currentIndex > 1) {
+			currentIndex--;
+		} else if (deltaX < -30 && currentIndex < items.length - 1) {
+			currentIndex++;
+		}
+
+		updatePosition();
+		resetAutoScroll();
+	}
+
+	function animation() {
+		setSliderPosition();
+		if (isDragging) requestAnimationFrame(animation);
+	}
+
+	function setSliderPosition() {
+		track.style.transform = `translateX(${currentTranslate}px)`;
+	}
+
+	track.addEventListener('touchstart', touchStart);
+	track.addEventListener('touchmove', touchMove);
+	track.addEventListener('touchend', touchEnd);
+
+	track.addEventListener('transitionend', resetPosition);
+	track.addEventListener('mouseover', () => clearInterval(autoScroll));
+	track.addEventListener('mouseout', startAutoScroll);
+
+	createBullets();
+	setActiveBullet(1);
+	updatePosition();
+	startAutoScroll();
+</script>
 <script>
  let question = document.querySelectorAll(".question");
 
