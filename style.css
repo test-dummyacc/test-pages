@@ -82,6 +82,12 @@
       padding: 0 calc((90% - 230px) / 1.5)!important;
       box-sizing: border-box;
     }
+	.carouselTrack {
+	  user-select: none;
+	  -webkit-user-drag: none;
+	  touch-action: pan-y;
+	  will-change: transform;
+	}
 	.backed-reviews {
 		max-width: 145px!important;
 	}
@@ -142,6 +148,11 @@
             overflow: hidden;
             position: relative;
         }
+		.carousel {
+			touch-action: pan-y;
+			-webkit-overflow-scrolling: auto;
+			overflow: hidden;
+			}
         .carousel-track {
             display: flex;
             gap: 24px;
