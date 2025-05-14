@@ -196,6 +196,7 @@
 		  font-size: 20px;
 		  font-weight: 700;
 		  margin: 8px 0;
+		  font-family: 'Mulish', sans-serif;
 		}
 
 		.swiper-slide .carousel-item p {
@@ -203,6 +204,7 @@
 		  color: #6c6c6c;
 		  line-height: 1.4;
 		  margin: 0;
+		  font-family: 'Mulish', sans-serif;
 		}
 		.c1x30091 {width: 100%!important;}
 		.trustpilot {width: 50%!important;}
@@ -268,7 +270,7 @@
 		.carousel-item p {
 		  font-family: 'Mulish', sans-serif;
 		  font-weight: 500;
-		  font-size: 14px;
+		  font-size: 16px;
 		  margin: 0;
 		  line-height: 130%;
 		}
